@@ -25,19 +25,19 @@ This repository contains a Bulk RNA-Seq expression analysis pipeline comparing L
 
 ## Steps
 
-1. Dataset Download
-2. Quality control (QC) and Preprocessing
-3. Alignment and Post-alignment QC
-4. Quantification
-5. Differential expression analysis
+1. **Dataset Download** (SRA file → FASTQ)  
+2. **Quality Control and Preprocessing** (FastQC + MultiQC + Trimmomatic)  
+3. **Alignment and Post-Alignment QC** (HISAT2 + Samtools + Qualimap)  
+4. **Quantification** (featureCounts → gene counts matrix)  
+5. **Differential Expression Analysis** (DESeq2 in R)
 
-Note: Scripts for each step can be run from the scripts/ folder. 
+Note: Scripts for each step are provided in the `scripts/` folder. 
 
 ---
 
 ## Requirements
 
-### Primary analysis:
+### Primary analysis (Linux tools)
 
 - Sra toolkit
 - Fastqc
@@ -48,7 +48,7 @@ Note: Scripts for each step can be run from the scripts/ folder.
 - FeatureCounts
 - Qualimap
 
-### Differential Expression Analysis
+### Differential Expression Analysis (R packages)
 
 - R (v4.5)
 - BiocManager
@@ -60,17 +60,30 @@ Note: Scripts for each step can be run from the scripts/ folder.
 - RColorBrewer
 - pheatmap
 
-Note: 
-All the requirements can be directly installed by running the `./requirements.sh` and `Rscript install_packages.R`
+Note:
+Install all dependencies using:  
+```bash
+./requirements.sh         # Linux tools  
+Rscript install_packages.R # R packages
 
 ---
 
 ## Results
-  
+
+- Quality control reports (FastQC, MultiQC)
+
+- Alignment stats (HISAT2, Qualimap)
+
+- Gene counts matrix (FeatureCounts)
+
+- Differential expression results (DESeq2)
+
+- Plots: PCA, Volcano, Heatmaps
 
 ---
 
 ## References
 
 The datasets and analysis workflow were adapted from: 
-[Guo H, Ci X, Ahmed M, et al. ONECUT2 is a driver of neuroendocrine prostate cancer. Nat Commun. 2019;10(1):278. Published 2019 Jan 17. doi:10.1038/s41467-018-08133-6](https://pmc.ncbi.nlm.nih.gov/articles/PMC6336817/#Sec11) 
+- [Guo H, Ci X, Ahmed M, et al. ONECUT2 is a driver of neuroendocrine prostate cancer.Nat Commun. 2019;10(1):278](https://pmc.ncbi.nlm.nih.gov/articles/PMC6336817/#Sec11)
+- [Bulk RNA-sequencing pipeline and differential gene expression analysis](https://erilu.github.io/bulk-rnaseq-analysis/#Obtaining_raw_data_from_GEO)
