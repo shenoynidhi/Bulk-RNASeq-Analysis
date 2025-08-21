@@ -32,27 +32,30 @@ This repository contains a Bulk RNA-Seq expression analysis pipeline comparing L
 bash requirements.sh
 # Install R packages
 Rscript install_packages.R
-
-2. **Download dataset**
+```
+2. **Download dataset**: Fetch SRA files under each of the above mentioned samples for analysis
 
 ```bash
-# Download SRA files
+# For a single SRA file
 prefetch SRR7179504
 # Convert SRA to FASTQ
-fastq-dump --outdir fastq --gzip --skip-technical --readids --read-filter pass --dumpbase --split-3 --clip SRR7179504.sra
-# Use instead to automate multiple SRA downloads
-python3 scripts/fastq_download.py
-
-3. **Quality Control and Preprocessing**
+fastq-dump --outdir fastq --gzip --skip-technical --readids --read-filter pass --dumpbase --split-3 --clip SRR7179504/SRR7179504.sra
+# Optional: faster alternative
+fasterq-dump SRR7179504/SRR7179504.sra --split-files -O fastq --threads 8
+pigz -p 8 fastq/SRR7179504.fastq"
+# To download all SRA files in one go, use the provided script
+python3 scripts/fastq_download.py convert file??
+```
+3. **Quality Control (QC) and Preprocessing**: Check the quality of the reads followed by trimming (optional) and renaming for analysis
 
 ```bash
-#FASTQC for quality control
+# FASTQC for quality control
 fastqc fastq/*.fastq.gz -o fastqc_results/ --threads 8
-#MULTIQC for single QC report
+# MULTIQC for single QC report
 multiqc fastqc_results/ -o multiqc_report/
-#Trimming (optional for the above listed samples)
+# Trimming (optional for the above listed samples)
 java -jar Trimmomatic-0.39/trimmomatic-0.39.jar SE -threads 4 fastq/SRR7179504.fastq.gz fastq/SRR7179504_trimmed.fastq.gz TRAILING:10 -phred33
-#Concatenate individual sample runs and rename as per GEO
+# Concatenate individual sample runs and rename as per GEO
 cat fastq/SRR7179504_pass.fastq.gz fastq/SRR7179505_pass.fastq.gz fastq/SRR7179506_pass.fastq.gz fastq/SRR7179507_pass.fastq.gz > fastq/LNCAP_Normoxia_S1.fastq.gz
 cat fastq/SRR7179508_pass.fastq.gz fastq/SRR7179509_pass.fastq.gz fastq/SRR7179510_pass.fastq.gz fastq/SRR7179511_pass.fastq.gz > fastq/LNCAP_Normoxia_S2.fastq.gz
 cat fastq/SRR7179520_pass.fastq.gz fastq/SRR7179521_pass.fastq.gz fastq/SRR7179522_pass.fastq.gz fastq/SRR7179523_pass.fastq.gz > fastq/LNCAP_Hypoxia_S1.fastq.gz
@@ -61,28 +64,28 @@ mv fastq/SRR7179536_pass.fastq.gz fastq/PC3_Normoxia_S1.fastq.gz
 mv fastq/SRR7179537_pass.fastq.gz fastq/PC3_Normoxia_S2.fastq.gz
 mv fastq/SRR7179540_pass.fastq.gz fastq/PC3_Hypoxia_S1.fastq.gz
 mv fastq/SRR7179541_pass.fastq.gz fastq/PC3_Hypoxia_S2.fastq.gz
-#Clear downloaded SRA files 
+# Clear downloaded SRA files 
 rm -rf SRR*
-   
-4. **Alignment and Post-Alignment QC**
+```   
+4. **Alignment and Post-Alignment QC**: Map the reads to human reference genome (GRCh38) followed by indexing and additional quality check (optional)
 
 ```bash
-#Download and extract prebuilt human genome index for alignment using HISAT2
+# Download and extract prebuilt human genome index for alignment
 wget https://genome-idx.s3.amazonaws.com/hisat/grch38_genome.tar.gz
 tar -xvzf grch38_genome.tar.gz
-#Alignment using HISAT2 and convert to .bam format
+# Alignment using HISAT2 and convert to .bam format
 hisat2 -q -x grch38/genome -U ../LNCAP_Hypoxia_S1.fastq.gz | samtools sort -o LNCAP_Hypoxia_S1.bam
-#Use instead if RAM less than 8GB, uses 2 threads (-@ 2) and 1GB RAM per thread (-m 1G) and ./tmp helps to store intermediate files and automatically clean up incase system's default tmp directory is fast filling (low space)
+# Optional Alternative: For RAM less than 8GB, uses 2 threads (-@ 2) and 1GB RAM per thread (-m 1G) and ./tmp helps to store intermediate files and automatically clean up incase system's default tmp directory is at low space
 mkdir -p tmp
 hisat2 -q -x grch38/genome -U ../LNCAP_Hypoxia_S1.fastq.gz | samtools sort -m 1G -@ 2 -T ./tmp -o LNCAP_Hypoxia_S1.bam
-#Index .bam file
+# Index .bam file
 samtools index LNCAP_Hypoxia_S1.bam
-#Use instead to automate multiple sample alignments
+# Use for multiple files
 ./scripts/alignment.sh
-#Optional, quality Check for aligned .bam files (use --java-mem-size=6G for RAM less than 8GB) 
-qualimap rnaseq -bam <bam file> -gtf gencode.v48.primary_assembly.annotation.gtf -outdir rnaseq_qc_results --java-mem-size=6G
-
-5. **Quantification** 
+# Optional: Quality Check for aligned .bam files (use --java-mem-size=6G for RAM less than 8GB) 
+qualimap rnaseq -bam LNCAP_Hypoxia_S1.bam -gtf gencode.v48.primary_assembly.annotation.gtf -outdir rnaseq_qc_results --java-mem-size=6G
+```
+5. **Quantification**: Estimate read counts for each gene/transcripts
 
 ```bash
 #Download and extract GTF file for read count estimation
@@ -90,11 +93,11 @@ wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_48/gencod
 tar -xvzf gencode.v48.primary_assembly.annotation.gtf.gz
 #Run featureCounts to get read counts from .bam file
 mkdir -p quants
-featureCounts -S 2 -a Homo_sapiens.GRCh38.114.gtf -o quants/featurecounts.txt tmp.bam
-#Use instead for automating for each of the .bam files
+featureCounts -S 2 -a gencode.v48.primary_assembly.annotation.gtf -o quants/featurecounts.txt tmp.bam
+#To process all .bam files in one go
 ./scripts/featurecounts.sh
-
-6. **Differential Expression Analysis** (DESeq2 in R)
+```
+6. **Differential Expression Analysis**:
  
 
 ---
@@ -103,14 +106,15 @@ featureCounts -S 2 -a Homo_sapiens.GRCh38.114.gtf -o quants/featurecounts.txt tm
 
 ### Primary analysis (Linux tools)
 
-- Sra toolkit
-- Fastqc
-- Multiqc
+- sra-toolkit
+- pigz
+- FASTQC
+- MULTIQC
 - Trimmomatic
 - HISAT2
-- Samtools
-- FeatureCounts
-- Qualimap
+- samtools
+- subread
+- qualimap
 
 ### Differential Expression Analysis (R packages)
 
@@ -124,6 +128,7 @@ featureCounts -S 2 -a Homo_sapiens.GRCh38.114.gtf -o quants/featurecounts.txt tm
 - RColorBrewer
 - pheatmap
 
+Note: Qualimap installation should be done via conda or manually, refer [Documentation](http://qualimap.conesalab.org/), [Conda installation](https://anaconda.org/bioconda/qualimap)
 ---
 
 ## Results
