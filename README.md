@@ -97,9 +97,39 @@ featureCounts -S 2 -a gencode.v48.primary_assembly.annotation.gtf -o quants/feat
 #To process all .bam files in one go
 ./scripts/featurecounts.sh
 ```
-6. **Differential Expression Analysis**:
- 
+6. **Differential Expression Analysis**: Identify and study genes that exhibit significantly different expression levels between the two conditions
 
+**WorkFlow Overview** 
+
+1. Initial DESeq analysis (01_initial_DESeq.R)
+
+    - Load count and annotation files – Input your raw RNA-seq metadata and count matrix generated in the previous step and gene annotation to start the analysis.
+
+    - Filter genes by type and zero counts – Remove genes that are unlikely to be informative (non-coding or mostly zero across samples).
+
+    - Run DESeq normalization – Normalize counts to account for differences in sequencing depth and prepare data for downstream analyses.
+
+2. Exploratory visualizations (02_visualizations.R)
+
+    - PCA and sample distance heatmaps – Explore how samples cluster and identify any batch effects or outliers.
+
+    - Density plots for raw and normalized counts – Compare distribution of counts before and after normalization.
+
+    - Heatmap of top variable genes – Identify genes with the most variation across all samples, highlighting biologically meaningful differences.
+
+3. Cell line-specific DEA (03_cell_line_DE.R)
+
+    - Subset data for each cell line (LNCaP or PC3) – Analyze each cell line separately to account for major differences in gene expression.
+
+    - Differential expression analysis – Identify genes significantly up- or down-regulated between conditions (e.g., Hypoxia vs Normoxia).
+
+    - Volcano plots and heatmaps for top DE genes – Visualize significant DE genes and their expression patterns.
+
+    - Gene set enrichment analysis (GSEA) – Discover pathways or functional categories enriched in the DE genes.
+
+    - Optional: boxplots for specific genes – Inspect expression of individual genes of interest across conditions.
+
+- Note: `GRCh38annotation.csv` and `h.all.v2025.1.Hs.symbols.gmt` are provided in the repository
 ---
 
 ## Requirements
@@ -127,21 +157,27 @@ featureCounts -S 2 -a gencode.v48.primary_assembly.annotation.gtf -o quants/feat
 - EnhancedVolcano
 - RColorBrewer
 - pheatmap
+- org.Hs.eg.db
+- ggplot2
+- ggrepel
+- readr
+- stats
+- fgsea
+- stringr
+- stats
 
-Note: Qualimap installation should be done via conda or manually, refer [Documentation](http://qualimap.conesalab.org/), [Conda installation](https://anaconda.org/bioconda/qualimap)
+- Note: Qualimap installation should be done via conda or manually, refer [Documentation](http://qualimap.conesalab.org/), [Conda installation](https://anaconda.org/bioconda/qualimap)
 ---
 
 ## Results
 
-- Quality control reports (FastQC, MultiQC)
+- Gene counts matrix
 
-- Alignment stats (HISAT2, Qualimap)
+- Sample Variability Visualizations: PCA, Distance plot, Variable gene heatmap and Density plot for raw vs normalized counts
 
-- Gene counts matrix (FeatureCounts)
+- LNCAP Results (Hypoxia vs Normoxia): DEGs, Volcano Plot, Top 20 DE genes heatmap and GSEA plots
 
-- Differential expression results (DESeq2)
-
-- Plots: PCA, Volcano, Heatmaps
+- Boxplot for comparison of normalized counts of IGFBP1 gene across samples and conditions  
 
 ---
 
