@@ -3,8 +3,11 @@ if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
 # CRAN packages
-cran_pkgs <- c("tidyverse", "dplyr", "tibble",
-               "EnhancedVolcano", "RColorBrewer", "pheatmap")
+cran_pkgs <- c(
+    "tidyverse", "dplyr", "tibble",
+    "EnhancedVolcano", "RColorBrewer", "pheatmap",
+    "ggplot2", "ggrepel", "readr", "stringr", "stats", "matrixStats"
+)
 
 for (pkg in cran_pkgs) {
     if (!require(pkg, character.only = TRUE)) {
@@ -13,7 +16,9 @@ for (pkg in cran_pkgs) {
 }
 
 # Bioconductor packages
-bioc_pkgs <- c("DESeq2")
+bioc_pkgs <- c(
+    "DESeq2", "org.Hs.eg.db", "fgsea", "clusterProfiler"
+)
 
 for (pkg in bioc_pkgs) {
     if (!require(pkg, character.only = TRUE)) {
