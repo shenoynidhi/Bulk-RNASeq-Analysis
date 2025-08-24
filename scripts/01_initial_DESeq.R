@@ -6,7 +6,7 @@ library(tibble)
 
 #Loading required data files
 
-raw_counts <- read.csv("GSE106305_counts_matrix.csv", header = TRUE, row.names = "Geneid", stringsAsFactors = FALSE)
+raw_counts <- read.csv("./fastq/alignment/quants/GSE106305_counts_matrix.csv", header = TRUE, row.names = "Geneid", stringsAsFactors = FALSE)
 head(raw_counts)
 raw_counts <- raw_counts[,sort(colnames(raw_counts))]
 colSums(raw_counts)
@@ -34,7 +34,7 @@ dim(count_matrix)
 annotation_file <- "GRCh38annotation.csv"
 annotation <- read.csv(annotation_file, header=TRUE, stringsAsFactors = FALSE)
 
-counts_gse <- read.csv("GSE106305_counts_matrix.csv",
+counts_gse <- read.csv("./fastq/alignment/quants/GSE106305_counts_matrix.csv",
                      header = TRUE,
                      stringsAsFactors = FALSE)
 #remove version numbers on gene from both dfs
