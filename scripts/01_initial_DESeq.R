@@ -1,3 +1,8 @@
+#Load required libraries
+library(DESeq2)
+library(tidyverse)
+library(dplyr)
+library(tibble)
 #Loading required data files
 raw_counts <- read.csv("GSE106305_counts_matrix.csv", header = TRUE, row.names = "Geneid", stringsAsFactors = FALSE)
 head(raw_counts)

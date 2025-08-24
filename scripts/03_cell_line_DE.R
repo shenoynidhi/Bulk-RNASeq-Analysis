@@ -125,9 +125,6 @@ fgsea_results_ordered <- fgsea_results[order(-NES)]
 head(fgsea_results_ordered[, .(pathway, padj, NES)])
 plotEnrichment(hallmark_pathway[["HALLMARK_HYPOXIA"]], lncap_ranked_list)
 
-```
-
-```{r}
 #waterfall plot for fgsea results
 waterfall_plot <- function (fsgea_results, graph_title) {
   fgsea_results %>% 
@@ -141,6 +138,78 @@ waterfall_plot <- function (fsgea_results, graph_title) {
 }
 library(stringr)
 waterfall_plot(fgsea_results, "Hallmark pathways altered by hypoxia in LNCaP cells")
+ggsave("GSEA_hallmark_lncap.png", p, width = 8, height = 6, dpi = 300)
+
+#GSEA using Reactome pathways for lncap DEGs
+res_lncap <- read.csv("DEGs_lncap.csv", row.names = 1)
+head(res_lncap)
+
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(dplyr)
+library(stats)
+
+ncbi_list <- clusterProfiler::bitr(
+  geneID = rownames(res_lncap),        # use Ensembl IDs from row names
+  fromType = "ENSEMBL",          
+  toType = "ENTREZID", 
+  OrgDb = org.Hs.eg.db
+)
+
+res_lncap$ENSEMBL <- rownames(res_lncap)
+
+res_mapped <- res_lncap %>%
+  left_join(ncbi_list, by = "ENSEMBL") %>%
+  filter(!is.na(ENTREZID)) %>%
+  distinct(ENTREZID, .keep_all = TRUE)
+
+ngenes <- res_mapped$log2FoldChange
+names(ngenes) <- res_mapped$ENTREZID
+ngenes <- sort(ngenes, decreasing = TRUE)
+
+library(ReactomePA)
+enp_gsea <- gsePathway(
+  ngenes,
+  organism = "human",
+  #pvalueCutoff = 0.05,
+  verbose = FALSE
+)
+
+pathways <- enp_gsea@result
+pathways <- pathways[order(pathways$p.adjust), ]  # Sort by FDR (adjusted p-value)
+top_pathways <- pathways[order(abs(pathways$NES), decreasing = TRUE), ]  # Sort by NES
+
+library(dplyr)
+library(forcats)
+
+top20 <- top_pathways[1:20, ] %>%
+  mutate(Description = fct_reorder(Description, NES))  # Reorder factor for y-axis
+
+library(ggplot2)
+
+r1 <- ggplot(top20, aes(x = NES,
+                        y = Description,
+                        color = p.adjust,
+                        size = setSize)) +
+  geom_point(alpha = 0.9) +
+  scale_color_gradient(low = "#0072B2", high = "#D55E00", name = "FDR (p.adjust)") +
+  scale_size(range = c(3, 10), name = "Gene Set Size") +
+  labs(
+    title = "Top 20 Enriched Pathways",
+    subtitle = "Gene Set Enrichment Analysis (GSEA)",
+    x = "Normalized Enrichment Score (NES)",
+    y = NULL,
+    caption = "Data source: clusterProfiler::gsePathway"
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    axis.text.y = element_text(size = 5),
+    axis.text.x = element_text(size = 5),
+    plot.title = element_text(face = "bold", size = 9),
+    plot.subtitle = element_text(size = 7),
+    legend.position = "right"
+  )
+ggsave("GSEA_reactome_lncap.png", r1, width = 8, height = 6, dpi = 300)
 
 #Results can similarly be generated for PC3 cell line by subsetting dds object for PC3 samples and running DEA, GSEA and visualizations as shown above for LNCAP
 
