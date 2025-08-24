@@ -44,7 +44,7 @@ fastq-dump --outdir fastq --gzip --skip-technical --readids --read-filter pass -
 fasterq-dump SRR7179504/SRR7179504.sra --split-files -O fastq --threads 8
 pigz -p 8 fastq/SRR7179504.fastq"
 # To download all SRA files in one go, use the provided script
-python3 scripts/fastq_download.py
+python scripts/fastq_download.py
 ```
 3. **Quality Control (QC) and Preprocessing**: Check the quality of the reads followed by trimming (optional) and renaming for analysis
 
@@ -99,37 +99,37 @@ featureCounts -S 2 -a gencode.v48.primary_assembly.annotation.gtf -o quants/LNCA
 #To process all .bam files in one go
 ./scripts/counts.sh
 ```
-6. **Differential Expression Analysis**: Identify and study genes that exhibit significantly different expression levels between the two conditions
+6. **Differential Expression Analysis (DEA)**: Identify and study genes that exhibit significantly different expression levels between the two conditions
 
-    **WorkFlow Overview** 
+    - **WorkFlow Overview** 
 
-1. **Initial DESeq analysis** (01_initial_DESeq.R)
+        1. **Initial DESeq analysis** (01_initial_DESeq.R)
 
-    - Load count and annotation files – Input your raw RNA-seq metadata and count matrix generated in the previous step and gene annotation to start the analysis.
+            - Load count and annotation files – Input your raw RNA-seq metadata and count matrix generated in the previous step and gene annotation to start the analysis.
 
-    - Filter genes by type and zero counts – Remove genes that are unlikely to be informative (non-coding or mostly zero across samples).
+            - Filter genes by type and zero counts – Remove genes that are unlikely to be informative (non-coding or mostly zero across samples).
 
-    - Run DESeq normalization – Normalize counts to account for differences in sequencing depth and prepare data for downstream analyses.
+            - Run DESeq normalization – Normalize counts to account for differences in sequencing depth and prepare data for downstream analyses.
 
-2. **Exploratory visualizations** (02_visualizations.R)
+        2. **Exploratory visualizations** (02_visualizations.R)
 
-    - PCA and sample distance heatmaps – Explore how samples cluster and identify any batch effects or outliers.
+            - PCA and sample distance heatmaps – Explore how samples cluster and identify any batch effects or outliers.
 
-    - Density plots for raw and normalized counts – Compare distribution of counts before and after normalization.
+            - Density plots for raw and normalized counts – Compare distribution of counts before and after normalization.
 
-    - Heatmap of top variable genes – Identify genes with the most variation across all samples, highlighting biologically meaningful differences.
+            - Heatmap of top variable genes – Identify genes with the most variation across all samples, highlighting biologically meaningful differences.
 
-3. **Cell line-specific DEA** (03_cell_line_DE.R)
+        3. **Cell line-specific DEA** (03_cell_line_DE.R)
 
-    - Subset data for each cell line (LNCaP or PC3) – Analyze each cell line separately to account for major differences in gene expression.
+            - Subset data for each cell line (LNCaP or PC3) – Analyze each cell line separately to account for major differences in gene expression.
 
-    - Differential expression analysis – Identify genes significantly up- or down-regulated between conditions (e.g., Hypoxia vs Normoxia).
+            - Differential expression analysis – Identify genes significantly up- or down-regulated between conditions (Hypoxia vs Normoxia).
 
-    - Volcano plots and heatmaps for top DE genes – Visualize significant DE genes and their expression patterns.
+            - Volcano plots and heatmaps for top DE genes – Visualize significant DE genes and their expression patterns.
 
-    - Gene set enrichment analysis (GSEA) – Discover pathways or functional categories enriched in the DE genes.
+            - Gene set enrichment analysis (GSEA) – Discover pathways or functional categories enriched in the DE genes.
 
-    - Optional: boxplots for specific genes – Inspect expression of individual genes of interest across conditions.
+            - Optional: boxplots for specific genes – Inspect expression of individual genes of interest across conditions.
 
 - Note: `GRCh38annotation.csv` and `h.all.v2025.1.Hs.symbols.gmt` are provided in the repository
 ---
