@@ -74,8 +74,8 @@ rm -rf SRR*
 wget https://genome-idx.s3.amazonaws.com/hisat/grch38_genome.tar.gz
 tar -xvzf grch38_genome.tar.gz
 # Alignment using HISAT2 and convert to .bam format
-mkdir -p alignment
-cd alignment/
+mkdir -p fastq/alignment
+cd fastq/alignment/
 hisat2 -q -x grch38/genome -U fastq/LNCAP_Hypoxia_S1.fastq.gz | samtools sort -o LNCAP_Hypoxia_S1.bam
 # Optional Alternative: For RAM less than 8GB, uses 2 threads (-@ 2) and 1GB RAM per thread (-m 1G) and ./tmp helps to store intermediate files and automatically clean up incase system's default tmp directory is at low space
 mkdir -p tmp
@@ -87,7 +87,7 @@ samtools index LNCAP_Hypoxia_S1.bam
 # Optional: Quality Check for aligned .bam files (use --java-mem-size=6G for RAM less than 8GB) 
 qualimap rnaseq -bam LNCAP_Hypoxia_S1.bam -gtf gencode.v48.primary_assembly.annotation.gtf -outdir rnaseq_qc_results --java-mem-size=6G
 ```
-5. **Quantification**: Estimate read counts for each gene/transcripts
+5. **Quantification**: Estimate read counts for each gene/transcripts per sample and merge to create Raw Count matrix 
 
 ```bash
 #Download and extract GTF file for read count estimation
@@ -98,6 +98,8 @@ mkdir -p quants
 featureCounts -S 2 -a gencode.v48.primary_assembly.annotation.gtf -o quants/LNCAP_Hypoxia_S1_featurecounts.txt LNCAP_Hypoxia_S1.bam
 #To process all .bam files in one go
 ./scripts/counts.sh
+#To generate raw count matrix
+python count_matrix.py
 ```
 6. **Differential Expression Analysis (DEA)**: Identify and study genes that exhibit significantly different expression levels between the two conditions
 
