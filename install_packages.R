@@ -17,7 +17,7 @@ for (pkg in cran_pkgs) {
 
 # Bioconductor packages
 bioc_pkgs <- c(
-    "DESeq2", "org.Hs.eg.db", "fgsea", "clusterProfiler"
+    "DESeq2", "org.Hs.eg.db", "fgsea", "clusterProfiler", "ReactomePA"
 )
 
 for (pkg in bioc_pkgs) {
