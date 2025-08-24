@@ -3,7 +3,9 @@ library(DESeq2)
 library(tidyverse)
 library(dplyr)
 library(tibble)
+
 #Loading required data files
+
 raw_counts <- read.csv("GSE106305_counts_matrix.csv", header = TRUE, row.names = "Geneid", stringsAsFactors = FALSE)
 head(raw_counts)
 raw_counts <- raw_counts[,sort(colnames(raw_counts))]
@@ -15,8 +17,8 @@ print(condition)
 my_colData <- as.data.frame(condition)
 rownames(my_colData) <- colnames(raw_counts)
 head(my_colData)
-```
-##  creating dds object
+
+#creating dds object
 dds <- DESeqDataSetFromMatrix(countData = raw_counts,
                               colData = my_colData,
                               design = ~condition)

@@ -1,6 +1,6 @@
 #Differential expression analysis for each cell line separately
-#based on exploratory analysis, we can see that samples cluster by cell line (PC3 vs LNCAP) and then by condition (Hypoxia vs Normoxia) so we run DEA separately for each cell line
-#for lncap
+#Based on exploratory analysis, we can see that samples cluster by cell line (PC3 vs LNCAP) and then by condition (Hypoxia vs Normoxia) so we run DEA separately for each cell line
+#for lncap cell line
 dds_lncap <- dds[, grepl("LNCAP", colnames(dds))]
 dds_lncap
 dds_lncap$condition <- droplevels(dds_lncap$condition)
@@ -185,6 +185,7 @@ library(forcats)
 top20 <- top_pathways[1:20, ] %>%
   mutate(Description = fct_reorder(Description, NES))  # Reorder factor for y-axis
 
+#ggplot for fgsea results
 library(ggplot2)
 
 r1 <- ggplot(top20, aes(x = NES,
