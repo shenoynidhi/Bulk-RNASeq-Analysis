@@ -160,6 +160,8 @@ featureCounts -S 2 -a gencode.v48.primary_assembly.annotation.gtf -o quants/LNCA
 - RColorBrewer
 - pheatmap
 - org.Hs.eg.db
+- clusterProfiler
+- ReactomePA
 - ggplot2
 - ggrepel
 - readr
