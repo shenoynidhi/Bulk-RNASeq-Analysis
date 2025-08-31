@@ -53,7 +53,7 @@ python scripts/fastq_download.py
 fastqc fastq/*.fastq.gz -o fastqc_results/ --threads 8
 # MULTIQC for single QC report
 multiqc fastqc_results/ -o multiqc_report/
-# Trimming (optional for the above listed samples)
+# Trimming (optional for the above listed samples as QC reported good quality reads and no adapter contamination)
 java -jar Trimmomatic-0.39/trimmomatic-0.39.jar SE -threads 4 fastq/SRR7179504.fastq.gz fastq/SRR7179504_trimmed.fastq.gz TRAILING:10 -phred33
 # Concatenate individual sample runs and rename as per GEO (_pass is appended by fastq-dump, _1 appended by fasterq-dump on FASTQ file generation)
 cat fastq/SRR7179504_pass.fastq.gz fastq/SRR7179505_pass.fastq.gz fastq/SRR7179506_pass.fastq.gz fastq/SRR7179507_pass.fastq.gz > fastq/LNCAP_Normoxia_S1.fastq.gz
@@ -73,7 +73,7 @@ rm -rf SRR*
 # Download and extract prebuilt human genome index for alignment
 wget https://genome-idx.s3.amazonaws.com/hisat/grch38_genome.tar.gz
 tar -xvzf grch38_genome.tar.gz
-# Alignment using HISAT2 and convert to .bam format
+# Alignment using HISAT2 (memory efficient as compared to STAR) and convert to .bam format
 mkdir -p fastq/alignment
 cd fastq/alignment/
 hisat2 -q -x grch38/genome -U fastq/LNCAP_Hypoxia_S1.fastq.gz | samtools sort -o LNCAP_Hypoxia_S1.bam
@@ -99,14 +99,16 @@ featureCounts -S 2 -a gencode.v48.primary_assembly.annotation.gtf -o quants/LNCA
 #To process all .bam files in one go
 ./scripts/counts.sh
 #To generate raw count matrix
-python count_matrix.py
+python /scripts/count_matrix.py
 ```
 6. **Differential Expression Analysis (DEA)**: Identify and study genes that exhibit significantly different expression levels between the two conditions
 
     - **WorkFlow Overview** 
 
         1. **Initial DESeq analysis** (01_initial_DESeq.R)
-
+```bash
+            Rscript 01_initial_DESeq.R
+```
             - Load count and annotation files – Input your raw RNA-seq metadata and count matrix generated in the previous step and gene annotation to start the analysis.
 
             - Filter genes by type and zero counts – Remove genes that are unlikely to be informative (non-coding or mostly zero across samples).
@@ -114,7 +116,9 @@ python count_matrix.py
             - Run DESeq normalization – Normalize counts to account for differences in sequencing depth and prepare data for downstream analyses.
 
         2. **Exploratory visualizations** (02_visualizations.R)
-
+```bash
+            Rscript 02_visualizations.R
+```
             - PCA and sample distance heatmaps – Explore how samples cluster and identify any batch effects or outliers.
 
             - Density plots for raw and normalized counts – Compare distribution of counts before and after normalization.
@@ -122,7 +126,8 @@ python count_matrix.py
             - Heatmap of top variable genes – Identify genes with the most variation across all samples, highlighting biologically meaningful differences.
 
         3. **Cell line-specific DEA** (03_cell_line_DE.R)
-
+```bash                                                                                                                             Rscript 03_cell_line_DE.R
+```
             - Subset data for each cell line (LNCaP or PC3) – Analyze each cell line separately to account for major differences in gene expression.
 
             - Differential expression analysis – Identify genes significantly up- or down-regulated between conditions (Hypoxia vs Normoxia).
@@ -185,6 +190,17 @@ python count_matrix.py
 - LNCAP Results (Hypoxia vs Normoxia): DEGs list, Volcano Plot, Top 20 DE genes heatmap and GSEA plots
 - PC3 Results (Hypoxia vs Normoxia): DEGs list, Volcano Plot, Top 20 DE genes heatmap and GSEA plots
 - Boxplot for comparison of normalized counts of IGFBP1 gene across samples and conditions  
+
+---
+## Conclusion
+
+- Hypoxia reprograms prostate cancer cells in a cell line–dependent manner.
+
+- In AR-positive LNCaP, hypoxia sustains tumor survival by co-opting AR signaling, enhancing invasion and survival programs, while globally suppressing translation and other energy-expensive processes to conserve resources.
+
+- In AR-negative PC3, hypoxia drives metabolic rewiring toward glycolysis, engages epigenetic adaptation (DNA methylation and chromatin remodeling), and activates stress-survival pathways while simultaneously promoting immune evasion.
+
+- Together, these adaptations suggest that AR-targeted therapies become less effective under hypoxic conditions, as prostate cancers can bypass AR dependence and transition toward an androgen-independent, therapy-resistant phenotype.
 
 ---
 
