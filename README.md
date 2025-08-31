@@ -130,8 +130,8 @@ python /scripts/count_matrix.py
 
             - Optional: boxplots for specific genes – Inspect expression of individual genes of interest across conditions.
 
-### Note: 
-    - Run Rscript using `Rscript <script.R>`
+- Note: 
+    - Run Rscript using: Rscript <script.R>
     - `GRCh38annotation.csv` and `h.all.v2025.1.Hs.symbols.gmt` are provided in the repository
 ---
 
