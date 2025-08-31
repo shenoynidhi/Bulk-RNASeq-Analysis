@@ -215,16 +215,16 @@ ggsave("GSEA_reactome_lncap.png", r1, width = 8, height = 6, dpi = 300)
 #Results can similarly be generated for PC3 cell line by subsetting dds object for PC3 samples and running DEA, GSEA and visualizations as shown above for LNCAP
 
 #Additionally, boxplot for comparison of normalized counts of a specific gene (IGFBP1) in different samples and conditions
-annotation <- read.csv("GRCh38annotation.csv", header = T, stringsAsFactors = F)
-annotation$Geneid <- sub("\\..*$", "", annotation$Geneid)
-normalized_data <- counts(dds, normalized = T) 
-condition <- dds@colData$condition
-ensembl_id <- annotation$Geneid[which(annotation$Genesymbol == "IGFBP1")]
-expression <- normalized_data[ensembl_id,]
-gene_name <- annotation$Genesymbol[which(annotation$Geneid == ensembl_id)]
-gene_tib <- tibble(condition = condition, expression = expression)
-ggplot(gene_tib, aes(x = condition, y = expression))+
-geom_boxplot(outlier.size = NULL)+
-geom_point()+
-labs (title = paste0("Expression of ", gene_name, " - ", ensembl_id), x = "group", y = paste0("Normalized     expression"))+
-theme(axis.text.x = element_text(size = 11), axis.text.y = element_text(size = 11))
+#annotation <- read.csv("GRCh38annotation.csv", header = T, stringsAsFactors = F)
+#annotation$Geneid <- sub("\\..*$", "", annotation$Geneid)
+#normalized_data <- counts(dds, normalized = T) 
+#condition <- dds@colData$condition
+#ensembl_id <- annotation$Geneid[which(annotation$Genesymbol == "IGFBP1")]
+#expression <- normalized_data[ensembl_id,]
+#gene_name <- annotation$Genesymbol[which(annotation$Geneid == ensembl_id)]
+#gene_tib <- tibble(condition = condition, expression = expression)
+#ggplot(gene_tib, aes(x = condition, y = expression))+
+#geom_boxplot(outlier.size = NULL)+
+#geom_point()+
+#labs (title = paste0("Expression of ", gene_name, " - ", ensembl_id), x = "group", y = paste0("Normalized     expression"))+
+#theme(axis.text.x = element_text(size = 11), axis.text.y = element_text(size = 11))
