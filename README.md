@@ -197,15 +197,15 @@ python /scripts/count_matrix.py
 - In AR-positive LNCaP, hypoxia sustains tumor survival by co-opting AR signaling, enhancing invasion and survival programs, while globally suppressing translation and other energy-expensive processes to conserve resources. These adaptations suggest that AR-targeted therapies become less effective under hypoxic conditions, as the cancer becomes more aggressive by boosting AR activity and invasion. 
 
 <p align="center">
-  <img src="results/LNCAP/GSEA_hallmark_lncap.png" width="500px" />
-  <img src="results/LNCAP/GSEA_reactome_lncap.png" width="500px" />
+  <img src="results/LNCAP/GSEA_hallmark_lncap.png" width="65%" />
+  <img src="results/LNCAP/GSEA_reactome_lncap.png" width="65%" />
 </p>
 
 - In AR-negative PC3, hypoxia drives metabolic rewiring toward glycolysis, engages epigenetic adaptation (DNA methylation and chromatin remodeling), and activates stress-survival pathways while simultaneously promoting immune evasion. Already known for their agressive nature, hypoxia makes the PC3 cells even more tougher and resistant. 
 
 <p align="center">
-  <img src="results/PC3/GSEA_hallmark_pc3.png" width="500px" />
-  <img src="results/PC3/GSEA_reactome_pc3.png" width="500px" />
+  <img src="results/PC3/GSEA_hallmark_pc3.png" width="65%" />
+  <img src="results/PC3/GSEA_reactome_pc3.png" width="65%" />
 </p>
 
 - **Key Takeaway**: The two cell lines mirror real prostrate cancer progression. Early tumors (AR dependent,like LnCaP) may initially respond to hormone therapy, but as they advance (maybe through hypoxia like conditions) they turn castration-resistant (AR-independent, like PC3), thrive in hypoxia, and are more harder to treat. 
