@@ -1,7 +1,10 @@
 # Bulk RNA-Seq Analysis
 
-This repository contains a Bulk RNA-Seq expression analysis pipeline comparing LNCap and PC3 prostate cancer cells under normoxia and hypoxia conditions.
+This repository contains a Bulk RNA-Seq expression analysis pipeline comparing LNCap (AR-positive) and PC3 (AR-negative) prostate cancer cells under normoxia and hypoxia conditions.
 
+- **Research Question**: What molecular mechanisms enable AR-dependent (LNCaP) and AR-independent (PC3) prostate cancer cells to adapt and survive under hypoxic stress?
+ 
+- **Note**: Hypoxia arises when rapidly growing tumors outpace their blood supply, leading to oxygen-deprived regions. Under these conditions, cancer cells activate adaptive programs that rewire their metabolism and signaling, often resulting in therapy resistance.
 ---
 
 ## Dataset Information
@@ -186,15 +189,19 @@ python /scripts/count_matrix.py
 - Boxplot for comparison of normalized counts of IGFBP1 gene across samples and conditions  
 
 ---
-## Conclusion
+## Interpretation
 
 - Hypoxia reprograms prostate cancer cells in a cell line–dependent manner.
 
-- In AR-positive LNCaP, hypoxia sustains tumor survival by co-opting AR signaling, enhancing invasion and survival programs, while globally suppressing translation and other energy-expensive processes to conserve resources.
+- In AR-positive LNCaP, hypoxia sustains tumor survival by co-opting AR signaling, enhancing invasion and survival programs, while globally suppressing translation and other energy-expensive processes to conserve resources. These adaptations suggest that AR-targeted therapies become less effective under hypoxic conditions, as the cancer becomes more aggressive by boosting AR activity and invasion. 
 
-- In AR-negative PC3, hypoxia drives metabolic rewiring toward glycolysis, engages epigenetic adaptation (DNA methylation and chromatin remodeling), and activates stress-survival pathways while simultaneously promoting immune evasion.
+![Pathways altered by hypoxia in LNCaP cells](results/GSEA_hallmark_lncap.png)
 
-- Together, these adaptations suggest that AR-targeted therapies become less effective under hypoxic conditions, as prostate cancers can bypass AR dependence and transition toward an androgen-independent, therapy-resistant phenotype.
+- In AR-negative PC3, hypoxia drives metabolic rewiring toward glycolysis, engages epigenetic adaptation (DNA methylation and chromatin remodeling), and activates stress-survival pathways while simultaneously promoting immune evasion. Already known for their agressive nature, hypoxia makes the PC3 cells even more tougher and resistant. 
+
+![Pathways altered by hypoxia in PC3 cells](results/GSEA_hallmark_pc3.png)
+
+- **Key Takeaway**: The two cell lines mirror real prostrate cancer progression. Early tumors (AR dependent,like LnCaP) may initially respond to hormone therapy, but as they advance (maybe through hypoxia like conditions) they turn castration-resistant (AR-independent, like PC3), thrive in hypoxia, and are more harder to treat. 
 
 ---
 
