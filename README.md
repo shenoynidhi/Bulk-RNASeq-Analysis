@@ -96,7 +96,7 @@ qualimap rnaseq -bam LNCAP_Hypoxia_S1.bam -gtf gencode.v48.primary_assembly.anno
 ```bash
 #Download and extract GTF file for read count estimation
 wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_48/gencode.v48.primary_assembly.annotation.gtf.gz
-tar -xvzf gencode.v48.primary_assembly.annotation.gtf.gz
+gunzip gencode.v48.primary_assembly.annotation.gtf.gz
 #Run featureCounts to get read counts from .bam file
 mkdir -p quants
 featureCounts -S 2 -a gencode.v48.primary_assembly.annotation.gtf -o quants/LNCAP_Hypoxia_S1_featurecounts.txt LNCAP_Hypoxia_S1.bam
@@ -217,3 +217,5 @@ python /scripts/count_matrix.py
 The datasets and analysis workflow were adapted from: 
 - [Guo H, Ci X, Ahmed M, et al. ONECUT2 is a driver of neuroendocrine prostate cancer.Nat Commun. 2019;10(1):278](https://pmc.ncbi.nlm.nih.gov/articles/PMC6336817/#Sec11)
 - [Bulk RNA-sequencing pipeline and differential gene expression analysis](https://erilu.github.io/bulk-rnaseq-analysis/#Obtaining_raw_data_from_GEO)
+
+**I have created a fully automated NextFlow version of this pipeline here:**[Bulk RNAseq Analysis Pipeline with Nextflow automation](https://github.com/shenoynidhi/bulkRNAseq-nextflow)
